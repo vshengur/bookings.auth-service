@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - booking-system-network
+      - booking-net
 
   postgres:
     image: postgres:17.2
@@ -32,13 +32,14 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: auth_service
     networks:
-      - booking-system-network
+      - booking-net
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
 networks:
-  booking-system-network:
+  booking-net:
     external: true
+    name: booking-net
 
 volumes:
   postgres-data:
