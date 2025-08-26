@@ -1,18 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: auth-postgres
+  namespace: bookings
   labels:
-    app: postgres
+    app: auth-postgres
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: auth-postgres
   template:
     metadata:
       labels:
-        app: postgres
+        app: auth-postgres
     spec:
       containers:
       - name: postgres
@@ -23,12 +24,12 @@ spec:
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: db-credentials
+              name: auth-db-credentials
               key: username
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: db-credentials
+              name: auth-db-credentials
               key: password
         - name: POSTGRES_DB
           value: "auth_service"
@@ -38,15 +39,16 @@ spec:
       volumes:
       - name: postgres-data
         persistentVolumeClaim:
-          claimName: postgres-pvc
+          claimName: auth-postgres-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: auth-postgres-service
+  namespace: bookings
 spec:
   selector:
-    app: postgres
+    app: auth-postgres
   ports:
   - protocol: TCP
     port: 5432
@@ -56,7 +58,8 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pvc
+  name: auth-postgres-pvc
+  namespace: bookings
 spec:
   accessModes:
     - ReadWriteOnce
