@@ -24,6 +24,8 @@ func LoadConsulServiceConfig() {
 		Address: viper.GetString("CONSUL_ADDRESS"),
 		Folder:  viper.GetString("CONSUL_FOLDER"),
 	}
+
+	log.Printf("Consul configuration: Address=%s, Folder=%s", ConsulConnectionConfig.Address, ConsulConnectionConfig.Folder)
 }
 
 // GetConsulSecret получает секрет из Consul

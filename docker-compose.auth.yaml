@@ -6,18 +6,21 @@ services:
     ports:
       - "5000:8080"
     environment:
+      # Database connection (fallback if not in Consul)
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=admin
       - DB_PASSWORD=admin
       - DB_NAME=auth_service
-      - CONSUL_ADDRESS=${CONSUL_ADDRESS}
-      - CONSUL_FOLDER=${CONSUL_FOLDER}
-      - GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - JWT_SECRET=${JWT_SECRET}
-      - RUN_MODE=${RUN_MODE}
+      # Consul configuration - service will read secrets from Consul
+      - CONSUL_ADDRESS=http://consul:8500
+      - CONSUL_FOLDER=config
+      # Optional: Override specific values (if not set, will be read from Consul)
+      - GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - JWT_SECRET=${JWT_SECRET:-}
+      - RUN_MODE=${RUN_MODE:-dev}
     depends_on:
       - postgres
     networks:
