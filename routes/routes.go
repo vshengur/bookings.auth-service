@@ -30,6 +30,9 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 		DB: db,
 	}
 
+	// Обработчик проверки токена
+	tokenHandler := &handlers.TokenHandler{}
+
 	// Health check
 	r.GET("/health", healthHandler.HealthCheck)
 
@@ -44,4 +47,6 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 	r.POST("/users", userHandler.CreateUser)
 	r.PUT("/users/:id", userHandler.UpdateUser)
 	r.DELETE("/users/:id", userHandler.DeleteUser)
+
+	r.GET("/validate-token", tokenHandler.ValidateToken)
 }

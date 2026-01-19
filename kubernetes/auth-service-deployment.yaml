@@ -1,66 +1,73 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service
+  name: auth
+  namespace: bookings
   labels:
-    app: auth-service
+    app: auth
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: auth-service
+      app: auth
   template:
     metadata:
       labels:
-        app: auth-service
+        app: auth
     spec:
       containers:
-      - name: auth-service
-        image: bookings-auth-service:latest
+      - name: auth
+        image: vshengur/booking-auth-service:latest
         ports:
         - containerPort: 8080
         env:
         - name: DB_HOST
-          value: "postgres-service"
+          value: "auth-postgres-service.bookings"
         - name: DB_PORT
           value: "5432"
         - name: DB_USER
           valueFrom:
             secretKeyRef:
-              name: db-credentials
+              name: auth-db-credentials
               key: username
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: db-credentials
+              name: auth-db-credentials
               key: password
         - name: DB_NAME
           value: "auth_service"
+        - name: CONSUL_ADDRESS
+          value: "http://consul.bookings:8500"
+        - name: CONSUL_FOLDER
+          value: "config"
+        - name: RUN_MODE
+          value: "production"
         - name: GOOGLE_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: google-oauth
-              key: client-id
-        - name: GOOGLE_SECRET
+              name: auth-service-secrets
+              key: google-client-id
+        - name: GOOGLE_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: google-oauth
-              key: client-secret
-        - name: JWT_SECRET
+              name: auth-service-secrets
+              key: google-client-secret
+        - name: GOOGLE_REDIRECT_URL
           valueFrom:
             secretKeyRef:
-              name: jwt-secret
-              key: secret
+              name: auth-service-secrets
+              key: google-redirect-url
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service-service
+  name: auth-service
+  namespace: bookings
 spec:
   selector:
-    app: auth-service
+    app: auth
   ports:
   - protocol: TCP
     port: 8080
-    targetPort: 8080
-  type: LoadBalancer
+  type: ClusterIP
